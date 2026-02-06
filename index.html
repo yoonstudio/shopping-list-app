@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>할 일 관리</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- 헤더 -->
+        <header>
+            <h1>할 일 관리</h1>
+            <button id="darkModeToggle" class="dark-mode-toggle">🌙</button>
+        </header>
+
+        <!-- 진행률 영역 -->
+        <section class="progress-section">
+            <div class="progress-info">
+                <span class="progress-text" id="progressText">0/0 완료</span>
+                <span class="progress-percent" id="progressPercent">0%</span>
+            </div>
+            <div class="progress-bar-container">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+        </section>
+
+        <!-- 입력 영역 -->
+        <section class="input-section">
+            <input
+                type="text"
+                id="todoInput"
+                placeholder="할 일을 입력하세요"
+                autocomplete="off"
+            >
+            <select id="categorySelect">
+                <option value="업무">업무</option>
+                <option value="개인">개인</option>
+                <option value="공부">공부</option>
+            </select>
+            <button id="addBtn">추가</button>
+        </section>
+
+        <!-- 필터 영역 -->
+        <section class="filter-section">
+            <button class="filter-btn active" data-filter="전체">전체</button>
+            <button class="filter-btn" data-filter="업무">업무</button>
+            <button class="filter-btn" data-filter="개인">개인</button>
+            <button class="filter-btn" data-filter="공부">공부</button>
+        </section>
+
+        <!-- 목록 영역 -->
+        <section class="list-section">
+            <div id="todoList"></div>
+        </section>
+    </div>
+
+    <script src="js/app.js"></script>
+</body>
+</html>

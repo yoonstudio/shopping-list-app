@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>할 일 관리</title>
+    <title>쇼핑 리스트</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
     <div class="container">
         <!-- 헤더 -->
         <header>
-            <h1>할 일 관리</h1>
+            <h1>쇼핑 리스트</h1>
             <button id="darkModeToggle" class="dark-mode-toggle">🌙</button>
         </header>
 
@@ -30,13 +30,13 @@
             <input
                 type="text"
                 id="todoInput"
-                placeholder="할 일을 입력하세요"
+                placeholder="품목을 입력하세요"
                 autocomplete="off"
             >
             <select id="categorySelect">
-                <option value="업무">업무</option>
-                <option value="개인">개인</option>
-                <option value="공부">공부</option>
+                <option value="식사">식사</option>
+                <option value="간식">간식</option>
+                <option value="영양제">영양제</option>
             </select>
             <button id="addBtn">추가</button>
         </section>
@@ -44,9 +44,9 @@
         <!-- 필터 영역 -->
         <section class="filter-section">
             <button class="filter-btn active" data-filter="전체">전체</button>
-            <button class="filter-btn" data-filter="업무">업무</button>
-            <button class="filter-btn" data-filter="개인">개인</button>
-            <button class="filter-btn" data-filter="공부">공부</button>
+            <button class="filter-btn" data-filter="식사">식사</button>
+            <button class="filter-btn" data-filter="간식">간식</button>
+            <button class="filter-btn" data-filter="영양제">영양제</button>
         </section>
 
         <!-- 목록 영역 -->
@@ -55,6 +55,7 @@
         </section>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/app.js"></script>
 </body>
 </html>

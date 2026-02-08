@@ -1,20 +1,27 @@
 // ====================================
-// 할 일 관리 앱 (Supabase 연동)
+// 쇼핑 관리 앱 (Supabase 연동)
 // ====================================
 
 // Supabase 설정
 const SUPABASE_URL = 'https://vcdivsohwtxwycrcygph.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZjZGl2c29od3R4d3ljcmN5Z3BoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA0Mzg5MzIsImV4cCI6MjA4NjAxNDkzMn0.fYiccA6YJE1NvpQDOSyHYJY2NR2ndmSK-ytUxcKa-p8';
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+let supabaseClient = null;
+try {
+    if (window.supabase && window.supabase.createClient) {
+        supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    } else {
+        console.error('Supabase SDK가 로드되지 않았습니다. CDN 연결을 확인하세요.');
+    }
+} catch (error) {
+    console.error('Supabase 초기화 실패:', error);
+}
 
 // DOM 요소
-const todoInput = document.getElementById('todoInput');
-const categorySelect = document.getElementById('categorySelect');
-const addBtn = document.getElementById('addBtn');
-const todoList = document.getElementById('todoList');
+let todoInput, categorySelect, addBtn, todoList;
 
 // 전역 변수
-let todos = []; // 할 일 배열
+let todos = []; // 쇼핑 배열
 let currentFilter = '전체'; // 현재 활성화된 필터
 
 // 상수
@@ -25,11 +32,11 @@ const DARK_MODE_KEY = 'darkMode'; // 다크 모드 localStorage 키
 // ====================================
 
 /**
- * Supabase에서 할 일 목록 불러오기
+ * Supabase에서 쇼핑 목록 불러오기
  */
 async function loadTodos() {
     try {
-        const { data, error } = await supabase
+        const { data, error } = await supabaseClient
             .from('shopping_items')
             .select('*')
             .order('created_at', { ascending: true });
@@ -51,11 +58,11 @@ async function loadTodos() {
 }
 
 /**
- * Supabase에 할 일 추가
+ * Supabase에 쇼핑 추가
  */
 async function addTodoToDB(todo) {
     try {
-        const { data, error } = await supabase
+        const { data, error } = await supabaseClient
             .from('shopping_items')
             .insert({
                 title: todo.title,
@@ -75,7 +82,7 @@ async function addTodoToDB(todo) {
 }
 
 /**
- * Supabase에서 할 일 업데이트
+ * Supabase에서 쇼핑 업데이트
  */
 async function updateTodoInDB(id, updates) {
     try {
@@ -85,7 +92,7 @@ async function updateTodoInDB(id, updates) {
         if (updates.completed !== undefined) dbUpdates.completed = updates.completed;
         if (updates.completedAt !== undefined) dbUpdates.completed_at = updates.completedAt;
 
-        const { error } = await supabase
+        const { error } = await supabaseClient
             .from('shopping_items')
             .update(dbUpdates)
             .eq('id', id);
@@ -97,11 +104,11 @@ async function updateTodoInDB(id, updates) {
 }
 
 /**
- * Supabase에서 할 일 삭제
+ * Supabase에서 쇼핑 삭제
  */
 async function deleteTodoFromDB(id) {
     try {
-        const { error } = await supabase
+        const { error } = await supabaseClient
             .from('shopping_items')
             .delete()
             .eq('id', id);
@@ -113,21 +120,21 @@ async function deleteTodoFromDB(id) {
 }
 
 // ====================================
-// 할 일 CRUD 함수
+// 쇼핑 CRUD 함수
 // ====================================
 
-// 할 일 추가 함수
+// 쇼핑 추가 함수
 async function addTodo() {
     const title = todoInput.value.trim();
     const category = categorySelect.value;
 
     // 입력 검증
     if (title === '') {
-        alert('할 일을 입력해주세요!');
+        alert('아이템을 입력해주세요!');
         return;
     }
 
-    // 새로운 할 일 객체 생성
+    // 새로운 쇼핑 객체 생성
     const newTodo = {
         title: title,
         category: category,
@@ -174,25 +181,25 @@ function updateProgress() {
     progressBar.style.width = `${percentage}%`;
 }
 
-// 할 일 목록 렌더링 함수
+// 쇼핑 목록 렌더링 함수
 function renderTodos() {
     // 목록 초기화
     todoList.innerHTML = '';
 
-    // 필터링된 할 일 목록
+    // 필터링된 쇼핑 목록
     const filteredTodos = currentFilter === '전체'
         ? todos
         : todos.filter(todo => todo.category === currentFilter);
 
-    // 할 일이 없는 경우
+    // 아이템이 없는 경우
     if (filteredTodos.length === 0) {
-        todoList.innerHTML = '<div class="empty-message">할 일이 없습니다.</div>';
+        todoList.innerHTML = '<div class="empty-message">아이템이 없습니다.</div>';
         // 진행률 업데이트는 항상 실행
         updateProgress();
         return;
     }
 
-    // 각 할 일 항목 생성
+    // 각 쇼핑 항목 생성
     filteredTodos.forEach(todo => {
         const todoItem = document.createElement('div');
         todoItem.className = 'todo-item';
@@ -230,7 +237,7 @@ function renderTodos() {
     updateProgress();
 }
 
-// 할 일 완료 상태 토글 함수
+// 쇼핑 완료 상태 토글 함수
 async function toggleTodo(id) {
     const todo = todos.find(t => t.id === id);
     if (todo) {
@@ -254,7 +261,7 @@ async function toggleTodo(id) {
     }
 }
 
-// 할 일 삭제 함수
+// 쇼핑 삭제 함수
 async function deleteTodo(id) {
     // 삭제 확인
     if (confirm('정말 삭제하시겠습니까?')) {
@@ -272,7 +279,7 @@ async function deleteTodo(id) {
     }
 }
 
-// 할 일 수정 함수
+// 쇼핑 수정 함수
 function editTodo(id) {
     const todo = todos.find(t => t.id === id);
     if (!todo) return;
@@ -295,9 +302,9 @@ function editTodo(id) {
     titleSpan.innerHTML = `
         <input type="text" class="edit-input" value="${currentTitle}">
         <select class="edit-category">
-            <option value="업무" ${currentCategory === '업무' ? 'selected' : ''}>업무</option>
-            <option value="개인" ${currentCategory === '개인' ? 'selected' : ''}>개인</option>
-            <option value="공부" ${currentCategory === '공부' ? 'selected' : ''}>공부</option>
+            <option value="메인" ${currentCategory === '메인' ? 'selected' : ''}>메인</option>
+            <option value="사이드" ${currentCategory === '사이드' ? 'selected' : ''}>사이드</option>
+            <option value="간식" ${currentCategory === '간식' ? 'selected' : ''}>간식</option>
         </select>
         <button class="save-btn">저장</button>
         <button class="cancel-btn">취소</button>
@@ -318,7 +325,7 @@ function editTodo(id) {
         const newCategory = editCategory.value;
 
         if (newTitle === '') {
-            alert('할 일을 입력해주세요!');
+            alert('아이템을 입력해주세요!');
             editInput.focus();
             return;
         }
@@ -376,15 +383,7 @@ function setFilter(filter) {
     renderTodos();
 }
 
-// 이벤트 리스너
-addBtn.addEventListener('click', addTodo);
-
-// Enter 키 이벤트
-todoInput.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') {
-        addTodo();
-    }
-});
+// 이벤트 리스너는 DOMContentLoaded에서 등록
 
 // ====================================
 // 다크 모드 함수
@@ -452,6 +451,22 @@ function initDarkMode() {
 
 // 초기화
 document.addEventListener('DOMContentLoaded', async () => {
+    // DOM 요소 초기화
+    todoInput = document.getElementById('todoInput');
+    categorySelect = document.getElementById('categorySelect');
+    addBtn = document.getElementById('addBtn');
+    todoList = document.getElementById('todoList');
+
+    // 추가 버튼 이벤트 리스너
+    addBtn.addEventListener('click', addTodo);
+
+    // Enter 키 이벤트
+    todoInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            addTodo();
+        }
+    });
+
     // Supabase에서 데이터 로드
     await loadTodos();
 

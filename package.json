@@ -1,7 +1,7 @@
 {
   "name": "mcp_01",
   "version": "1.0.0",
-  "description": "매일 10-20개 정도의 할 일을 효율적으로 관리할 수 있는 개인용 웹 애플리케이션입니다.",
+  "description": "매일 10-20개 정도의 쇼핑을 효율적으로 관리할 수 있는 개인용 웹 애플리케이션입니다.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
